@@ -2,18 +2,17 @@ package reversi;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Random;
 
-public class MySecondBot implements ReversiBot {
+public class GreedyBot implements ReversiBot{
 
     private final ReversiGame game;
 
-    public MySecondBot(ReversiGame game) {
+    public GreedyBot(ReversiGame game) {
         this.game = game;
     }
 
     public MoveScore getNextMove() {
-        return getRandomMove();
+        return getNextGreedyMove();
     }
 
     public MoveScore getNextGreedyMove() {
@@ -33,14 +32,5 @@ public class MySecondBot implements ReversiBot {
             }
         }
         return bestMove;
-    }
-
-    public MoveScore getRandomMove() {
-        MoveScore[] possibleMoves = this.game.getPossibleMoves();
-        if (possibleMoves.length == 0) {
-            return null;
-        }
-        Random rand = new Random();
-        return possibleMoves[rand.nextInt(possibleMoves.length)];
     }
 }

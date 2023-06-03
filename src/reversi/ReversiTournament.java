@@ -1,11 +1,8 @@
 package reversi;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -20,23 +17,23 @@ public class ReversiTournament {
     private static boolean VERBOSE = false;
 
     public static void main(String[] args)
-            throws ClassNotFoundException, InstantiationException, IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IOException {
+            throws Exception {
         TournamentContestant[] contestants = loadContestants();
         if (contestants.length < 2) {
             System.out.println("Not enough contestants to run a tournament!");
             return;
         }
 
-        // Shuffling so that we get a random order of competitions
+        // Randomly order of competitions
         Collections.shuffle(Arrays.asList(contestants));
-
+    
         competeRoundRobin(contestants);
+        Arrays.sort(contestants, (a, b) -> b.score - a.score);
         printLeaderboard(contestants);
-
     }
 
-    private static void competeRoundRobin(TournamentContestant[] contestants) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IOException {
+    private static void competeRoundRobin(TournamentContestant[] contestants) throws ReflectiveOperationException, RuntimeException, IOException {
+        System.out.println("\r\nStarting roubdrobin tournament with " + contestants.length + " contestants");
         for (int i = 0; i < contestants.length; i++) {
             for (int j = i + 1; j < contestants.length; j++) {
                 int result = matchBots(contestants[i], contestants[j]);
@@ -68,7 +65,7 @@ public class ReversiTournament {
 
     private static int matchBots(
             TournamentContestant contestant1,
-            TournamentContestant contestant2) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IOException {
+            TournamentContestant contestant2) throws ReflectiveOperationException, IOException {
         System.out.println("Starting match between " + contestant1.botClass.getSimpleName() + " and "
                 + contestant2.botClass.getSimpleName());
                 System.out.println("Are you ready to rubmble? Press enter to start");
@@ -77,9 +74,7 @@ public class ReversiTournament {
         SingleRoundScore contestant1MatchScore1 = new SingleRoundScore(contestant1, 0);        
         SingleRoundScore contestant1MatchScore2 = new SingleRoundScore(contestant2, 0);        
 
-        SingleRoundScore[] contestantsWithScores = new SingleRoundScore[2];
-        contestantsWithScores[0] = contestant1MatchScore1;
-        contestantsWithScores[1] = contestant1MatchScore2;
+        SingleRoundScore[] contestantsWithScores = {contestant1MatchScore1, contestant1MatchScore2};
 
         int ties = 0;
 
@@ -96,9 +91,7 @@ public class ReversiTournament {
 
             // Creating a new instance by calling the constructor with the game
             // The players order matches the order of the contestantsWithScores array in this single game 
-            ReversiBot[] players = new ReversiBot[2];
-            players[0] = contestantsWithScores[0].constructor.newInstance(game);
-            players[1] = contestantsWithScores[1].constructor.newInstance(game);
+            ReversiBot[] players = {contestantsWithScores[0].constructor.newInstance(game), contestantsWithScores[1].constructor.newInstance(game)};
 
             while (!game.isGameOver()) {
                 if (VERBOSE)
@@ -131,18 +124,8 @@ public class ReversiTournament {
         return contestant1MatchScore1.singleRoundScore - contestant1MatchScore2.singleRoundScore;
     }
 
-    private static class TournamentContestant {
-        TournamentContestant(Class<? extends ReversiBot> botClass) {
-            this.botClass = botClass;
-            score = 0;
-        }
-
-        final Class<? extends ReversiBot> botClass;
-        int score; // 3 points for win, 1 point for tie, 0 points for loss
-    }
-
     private static TournamentContestant[] loadContestants()
-            throws UnsupportedEncodingException, ClassNotFoundException {
+            throws IOException, ReflectiveOperationException {
 
         Package currentPackage = ReversiTournament.class.getPackage();
 
@@ -151,15 +134,11 @@ public class ReversiTournament {
         String path = ReversiTournament.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         path = URLDecoder.decode(path, StandardCharsets.UTF_8.name());
         final File directory = new File(path, packageName.replace('.', '/'));
+        
+        // Assuming that all the bots are in the same package as the tournament and end with "Bot.class"
+        File[] botFiles = directory.listFiles(pathname -> pathname.getName().endsWith("Bot.class"));
 
-        File[] botFiles = directory.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.getName().endsWith("Bot.class");
-            }
-        });
-
-        List<TournamentContestant> contestants = new ArrayList<TournamentContestant>();
+        List<TournamentContestant> contestants = new ArrayList<>();
         for (int i = 0; i < botFiles.length; i++) {
             @SuppressWarnings("unchecked")
             Class<? extends ReversiBot> botClass = (Class<? extends ReversiBot>) Class
@@ -169,23 +148,37 @@ public class ReversiTournament {
             }
             contestants.add(new TournamentContestant(botClass));
         }
+        System.out.println("Loaded " + contestants.size() + " contestants: ");
+        contestants.forEach( (contestant) -> { System.out.println(contestant.botClass.getSimpleName()); } );
         return contestants.toArray(new TournamentContestant[contestants.size()]);
     }
 
+
+    private static class TournamentContestant {
+        private final Class<? extends ReversiBot> botClass;
+        private int score; // 3 points for win, 1 point for tie, 0 points for loss
+
+        TournamentContestant(Class<? extends ReversiBot> botClass) {
+            this.botClass = botClass;
+            score = 0;
+        }
+        
+    }
+
+    
     private static class SingleRoundScore {
+        private final TournamentContestant contestant;
+        private final Constructor<? extends ReversiBot> constructor;
+        private int singleRoundScore;
+
         public SingleRoundScore(TournamentContestant contestant, int singleRoundScore)
-                throws NoSuchMethodException, SecurityException {
+                throws ReflectiveOperationException {
             this.contestant = contestant;
             this.singleRoundScore = singleRoundScore;
             // tiny optimization. Storing the constructor instead of using reflection in
             // each iteration
             this.constructor = contestant.botClass.getConstructor(ReversiGame.class);
         }
-
-        TournamentContestant contestant;
-        private final Constructor<? extends ReversiBot> constructor;
-        int singleRoundScore;
-
     }
 
 }
