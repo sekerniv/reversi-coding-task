@@ -201,7 +201,7 @@ public class ReversiGame {
 			}
 		}
 		if (success) {
-			this.curPlayer = opponentPlayer(this.curPlayer);
+			switchToNextPlayablePlayer();
 		}
 
 		return success;
@@ -217,7 +217,59 @@ public class ReversiGame {
 	// ========================================
 
 	/**
-	 * Task 6: Implement this method
+	 * Task 7: Implement this method
+	 * @param player - the player that is making the move
+	 * @param row - the row of the move
+	 * @param col
+	 * @return
+	 */
+	private int calcMoveBenefit(int player, int row, int col) {
+		int benefit = 0;
+		if (this.board[row][col] != 0) {
+			return 0;
+		}
+
+		for (int rowInc = -1; rowInc <= 1; rowInc++) {
+			for (int colInc = -1; colInc <= 1; colInc++) {
+				benefit += calcFlipsInDirection(player, row, col, rowInc, colInc);
+			}
+		}
+		return benefit;
+	}
+
+
+	/**
+	 * Task 8: Implement this method
+	 * 
+	 * @return an array of all possible moves for the current player (the array
+	 *         doesn't contain nulls). If there are no possible moves, return an
+	 *         empty array
+	 */
+	private MoveScore[] getPossibleMoves(int player) {
+		MoveScore[] possibleMoves = new MoveScore[this.board.length * this.board[0].length];
+		int index = 0;
+		for (int row = 0; row < this.board.length; row++) {
+			for (int col = 0; col < this.board[row].length; col++) {
+				int benefit = calcMoveBenefit(player, row, col);
+				if (benefit > 0) {
+					possibleMoves[index] = new MoveScore(row, col, benefit);
+					index++;
+				}
+			}
+		}
+		return Arrays.copyOf(possibleMoves, index);
+	}
+
+	/**
+	 * 
+	 * @return an array of all possible moves for the current player (the array
+	 */
+	public MoveScore[] getPossibleMoves() {
+		return this.getPossibleMoves(this.curPlayer);
+	}
+
+	/**
+	 * Task 9: Implement this method
 	 * 
 	 * A game is over if none of the players have a move to play (i.e. no empty
 	 * squares left on the board or none of the players have a valid move)
@@ -228,7 +280,22 @@ public class ReversiGame {
 	}
 
 	/**
-	 * Task 7: Implement this method
+	 * Task 10: Implement this method
+	 * This method switches to the opponent player. If there's no move for the opponent player to play, the current player remains the same
+	 * @return the current player after the switch
+	 */
+	public int switchToNextPlayablePlayer() {
+		this.curPlayer = opponentPlayer(this.curPlayer);
+		if (this.getPossibleMoves().length == 0) {
+			// System.out.println("There are no possible moves for player " + this.curPlayer + " skipping turn");
+			this.curPlayer = opponentPlayer(this.curPlayer);
+		}
+
+		return this.curPlayer;
+	}
+
+	/**
+	 * Task 11: Implement this method
 	 * A player wins if the game is over and the player has more pieces on the board
 	 * than the opponent
 	 * 
@@ -260,58 +327,4 @@ public class ReversiGame {
 			return 0;
 		}
 	}
-
-	public void skipTurn() {
-		this.curPlayer = opponentPlayer(this.curPlayer);
-	}
-
-	/**
-	 * Task 7: Implement this method
-	 * @param player - the player that is making the move
-	 * @param row - the row of the move
-	 * @param col
-	 * @return
-	 */
-	private int calcMoveBenefit(int player, int row, int col) {
-		int benefit = 0;
-		if (this.board[row][col] != 0) {
-			return 0;
-		}
-
-		for (int rowInc = -1; rowInc <= 1; rowInc++) {
-			for (int colInc = -1; colInc <= 1; colInc++) {
-				benefit += calcFlipsInDirection(player, row, col, rowInc, colInc);
-			}
-		}
-		return benefit;
-	}
-
-	public MoveScore[] getPossibleMoves() {
-		return this.getPossibleMoves(this.curPlayer);
-	}
-
-	/**
-	 * Task 8: Implement this method
-	 * 
-	 * @return an array of all possible moves for the current player (the array
-	 *         doesn't contain nulls). If there are no possible moves, return an
-	 *         empty array
-	 */
-	private MoveScore[] getPossibleMoves(int player) {
-		MoveScore[] possibleMoves = new MoveScore[this.board.length * this.board[0].length];
-		int index = 0;
-		for (int row = 0; row < this.board.length; row++) {
-			for (int col = 0; col < this.board[row].length; col++) {
-				int benefit = calcMoveBenefit(player, row, col);
-				if (benefit > 0) {
-					possibleMoves[index] = new MoveScore(row, col, benefit);
-					index++;
-				}
-			}
-		}
-		return Arrays.copyOf(possibleMoves, index);
-	}
-
-	
-
 }

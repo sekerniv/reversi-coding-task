@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-
 public class ReversiTournament {
 
     private static final int NUM_OF_GAMES = 1000;
@@ -24,27 +23,28 @@ public class ReversiTournament {
             return;
         }
 
-        // Randomly order of competitions
+        // Randomly order competitions
         Collections.shuffle(Arrays.asList(contestants));
-    
+
         competeRoundRobin(contestants);
         Arrays.sort(contestants, (a, b) -> b.score - a.score);
         printLeaderboard(contestants);
     }
 
-    private static void competeRoundRobin(TournamentContestant[] contestants) throws ReflectiveOperationException, RuntimeException, IOException {
+    private static void competeRoundRobin(TournamentContestant[] contestants)
+            throws ReflectiveOperationException, RuntimeException, IOException {
         System.out.println("\r\nStarting roubdrobin tournament with " + contestants.length + " contestants");
         for (int i = 0; i < contestants.length; i++) {
             for (int j = i + 1; j < contestants.length; j++) {
                 int result = matchBots(contestants[i], contestants[j]);
                 if (result > 0) {
                     contestants[i].score += 1;
-                } else if (result < 0){
+                } else if (result < 0) {
                     contestants[j].score += 1;
                 } else { // no points for tie
 
                 }
-                printLeaderboard(contestants);    
+                printLeaderboard(contestants);
                 System.out.println("Press enter to continue");
                 System.in.read();
             }
@@ -62,19 +62,18 @@ public class ReversiTournament {
         System.out.println("==============================================");
     }
 
-
     private static int matchBots(
             TournamentContestant contestant1,
             TournamentContestant contestant2) throws ReflectiveOperationException, IOException {
         System.out.println("Starting match between " + contestant1.botClass.getSimpleName() + " and "
                 + contestant2.botClass.getSimpleName());
-                System.out.println("Are you ready to rubmble? Press enter to start");
+        System.out.println("Are you ready to rubmble? Press enter to start");
         System.in.read();
 
-        SingleRoundScore contestant1MatchScore1 = new SingleRoundScore(contestant1, 0);        
-        SingleRoundScore contestant1MatchScore2 = new SingleRoundScore(contestant2, 0);        
+        SingleRoundScore contestant1MatchScore1 = new SingleRoundScore(contestant1, 0);
+        SingleRoundScore contestant1MatchScore2 = new SingleRoundScore(contestant2, 0);
 
-        SingleRoundScore[] contestantsWithScores = {contestant1MatchScore1, contestant1MatchScore2};
+        SingleRoundScore[] contestantsWithScores = { contestant1MatchScore1, contestant1MatchScore2 };
 
         int ties = 0;
 
@@ -83,39 +82,44 @@ public class ReversiTournament {
             if (VERBOSE) {
                 System.out.println("Game " + (i + 1) + " out of " + NUM_OF_GAMES);
             }
-            
+
             ReversiGame game = new ReversiGame();
 
             // "flipping coin" to decide who plays first
             Collections.shuffle(Arrays.asList(contestantsWithScores));
 
             // Creating a new instance by calling the constructor with the game
-            // The players order matches the order of the contestantsWithScores array in this single game 
-            ReversiBot[] players = {contestantsWithScores[0].constructor.newInstance(game), contestantsWithScores[1].constructor.newInstance(game)};
+            // The players order matches the order of the contestantsWithScores array in
+            // this single game
+            ReversiBot[] players = { contestantsWithScores[0].constructor.newInstance(game),
+                    contestantsWithScores[1].constructor.newInstance(game) };
 
             while (!game.isGameOver()) {
                 if (VERBOSE)
                     game.printBoard();
                 MoveScore nextMove = players[game.getCurPlayer() - 1].getNextMove();
                 if (nextMove == null) {
-                    game.skipTurn();
-                } else {
-                    game.placeDisk(nextMove.getRow(), nextMove.getColumn());
+                    throw new RuntimeException(
+                            "The game is not over but the bot returned null move - something is off!");
                 }
+                game.placeDisk(nextMove.getRow(), nextMove.getColumn());
+
             }
 
             if (game.getWinner() == ReversiGame.PLAYER_ONE) {
-                contestantsWithScores[0].singleRoundScore ++;
+                contestantsWithScores[0].singleRoundScore++;
             } else if (game.getWinner() == ReversiGame.PLAYER_TWO) {
-                contestantsWithScores[1].singleRoundScore ++;
+                contestantsWithScores[1].singleRoundScore++;
             } else {
-                // no point for tie
+                // no points for tie
             }
 
         }
 
         System.out.println("Match is over!");
-        System.out.println(contestantsWithScores[0].singleRoundScore > contestantsWithScores[1].singleRoundScore? contestant1.botClass.getSimpleName() + " wins!" : contestant2.botClass.getSimpleName() + " wins!");
+        System.out.println(contestantsWithScores[0].singleRoundScore > contestantsWithScores[1].singleRoundScore
+                ? contestant1.botClass.getSimpleName() + " wins!"
+                : contestant2.botClass.getSimpleName() + " wins!");
         System.out.println("Results: " + contestantsWithScores[0].contestant.botClass.getSimpleName() + " "
                 + contestantsWithScores[0].singleRoundScore + " points, "
                 + contestantsWithScores[1].contestant.botClass.getSimpleName() + " "
@@ -134,8 +138,9 @@ public class ReversiTournament {
         String path = ReversiTournament.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         path = URLDecoder.decode(path, StandardCharsets.UTF_8.name());
         final File directory = new File(path, packageName.replace('.', '/'));
-        
-        // Assuming that all the bots are in the same package as the tournament and end with "Bot.class"
+
+        // Assuming that all the bots are in the same package as the tournament and end
+        // with "Bot.class"
         File[] botFiles = directory.listFiles(pathname -> pathname.getName().endsWith("Bot.class"));
 
         List<TournamentContestant> contestants = new ArrayList<>();
@@ -149,10 +154,11 @@ public class ReversiTournament {
             contestants.add(new TournamentContestant(botClass));
         }
         System.out.println("Loaded " + contestants.size() + " contestants: ");
-        contestants.forEach( (contestant) -> { System.out.println(contestant.botClass.getSimpleName()); } );
+        contestants.forEach((contestant) -> {
+            System.out.println(contestant.botClass.getSimpleName());
+        });
         return contestants.toArray(new TournamentContestant[contestants.size()]);
     }
-
 
     private static class TournamentContestant {
         private final Class<? extends ReversiBot> botClass;
@@ -162,10 +168,9 @@ public class ReversiTournament {
             this.botClass = botClass;
             score = 0;
         }
-        
+
     }
 
-    
     private static class SingleRoundScore {
         private final TournamentContestant contestant;
         private final Constructor<? extends ReversiBot> constructor;

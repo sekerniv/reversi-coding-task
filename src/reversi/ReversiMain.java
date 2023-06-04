@@ -44,39 +44,19 @@ public class ReversiMain {
 
 			while (!rg.isGameOver()) {
 				rg.printBoard();
-				if (rg.getPossibleMoves().length == 0) {
-					System.out.println("No possible moves for player " + rg.getCurPlayer() + " skipping turn");
-					rg.skipTurn();
-				}
-
+				MoveScore moveScore;
 				if (rg.getCurPlayer() == ReversiGame.PLAYER_ONE) {
-					// System.out.println("Player " + rg.getCurPlayer() + " please enter your row
-					// and column");
-					// int row = scanner.nextInt();
-					// int column = scanner.nextInt();
-					// while (!rg.placeDisk(row, column)) {
-					// System.out.println("Illegal move! Player " + rg.getCurPlayer() + " please
-					// enter your row and column");
-					// row = scanner.nextInt();
-					// column = scanner.nextInt();
-					// }
-
 					System.out.println("getTwoStepsPreferLocationMove bot is playing...");
-					MoveScore mb = bot.getTwoStepsPreferLocationMove();
-					if (mb != null) {
-						rg.placeDisk(mb.getRow(), mb.getColumn());
-					} else {
-						System.out.println("No possible moves for player " + rg.getCurPlayer());
-					}
+					moveScore = bot.getTwoStepsPreferLocationMove();
 				} else {
 					System.out.println("getTwoStepsGreedyMove bot is playing...");
-					MoveScore mb = bot.getTwoStepsGreedyMove();
-					if (mb != null) {
-						rg.placeDisk(mb.getRow(), mb.getColumn());
-					} else {
-						System.out.println("No possible moves for player " + rg.getCurPlayer());
-					}
+					moveScore = bot.getTwoStepsGreedyMove();
 				}
+				if(moveScore == null) {
+					System.out.println("No possible moves for player " + rg.getCurPlayer() + ". Why wasn't this game terminated?");
+					throw new RuntimeException("No possible moves for player " + rg.getCurPlayer() + " skipping turn");
+				}
+				rg.placeDisk(moveScore.getRow(), moveScore.getColumn());
 			}
 
 			rg.printBoard();
