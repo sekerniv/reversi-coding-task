@@ -8,9 +8,9 @@ package reversi;
  * while a bot that tries to get to the corners will have a higher score for a move that is closer to the corners. So the same exact move might have different score if the bot is different.
  */
 public class MoveScore {
-    private final int row;
-    private final int column;
-    private final int score;
+    private int row;
+    private int column;
+    private int score;
     
     public MoveScore(int row, int column, int score) {
         this.row = row;

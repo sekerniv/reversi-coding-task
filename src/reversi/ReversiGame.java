@@ -220,8 +220,8 @@ public class ReversiGame {
 	 * Task 7: Implement this method
 	 * @param player - the player that is making the move
 	 * @param row - the row of the move
-	 * @param col
-	 * @return
+	 * @param col - the column of the move
+	 * @return the benefit of the move (the number of disks that will be flipped)
 	 */
 	private int calcMoveBenefit(int player, int row, int col) {
 		int benefit = 0;
