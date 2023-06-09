@@ -5,7 +5,7 @@
 ### Overview
 This coding project is broken down into ~20 tasks and 4 parts, each building upon the previous part. The goal is to implement the Reversi game including different functionalities and bots. The final stage is a Bot Tournament where students' bots will compete each other.
 
-The detailed instructions for the tasks are provided to the students in a Google Doc (in Hebrew).
+The detailed instructions for the tasks are provided to the students in a [Google Doc (in Hebrew)](https://docs.google.com/document/d/1PASYXsaC1-EQuJLi9hLt9wANIwCu_uAq-cvVlwfOdiI/edit#).
 
 ### Part 1: Initial Setup and Basic Functionality
 In this part, the students will set up the initial project structure and implement the basic functionality of the game. Tasks include creating the constructor, implementing the **'print board'** function, and writing utility functions.
@@ -23,5 +23,5 @@ In Part 4, students will implement more advanced bot strategies, such as 1-move 
 ### Bot Tournament
 In the final stage of the project, a bot tournament will be organized. All students will have the opportunity to pit their bots against each other, play Reversi, and compete for the top spot.
 
-Note: The instructions provided to the students for each part will contain detailed explanations and requirements for each task, allowing them to gradually build their Reversi game and bot.
+Note: The instructions provided to the students for each part contains detailed explanations and requirements for each task, allowing them to gradually build their Reversi game and bot.
 
