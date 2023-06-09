@@ -19,9 +19,7 @@ public class ReversiGameTest {
 			{0, 0, 0, 0, 0, 0, 0, 0},
 			{0, 0, 0, 0, 0, 0, 0, 0},
 			{0, 0, 0, 0, 0, 0, 0, 0},
-
 	};
-	
 			
 	@Test
 	void testConstructor() {
@@ -32,7 +30,7 @@ public class ReversiGameTest {
 	@Test
 	void testPlaceDisksFromInitialState1() {
 		ReversiGame reversiGame = new ReversiGame();
-		assertTrue(reversiGame.placeDisk(2, 4), "expected to be valid move for initial board and 2, 3, 2");
+		assertTrue(reversiGame.placeDisk(2, 4), "expected to be valid move for initial board and 2, 4");
 		assertTrue(reversiGame.placeDisk(4, 5), "expected to be valid move for board "+ reversiGame.getBoard() + " and 4, 5");
 		assertTrue(reversiGame.placeDisk(5, 5), "expected to be valid move for board "+ reversiGame.getBoard() + " and 5, 5");
 		assertTrue(reversiGame.placeDisk(2, 3), "expected to be valid move for board "+ reversiGame.getBoard() + " and 5, 5");
@@ -49,13 +47,13 @@ public class ReversiGameTest {
 	@Test
 	void testIsValidMoveInitialStatePlayer1False() {
 		ReversiGame reversiGame = new ReversiGame();
-		assertFalse(reversiGame.placeDisk(3, 2), "expected to be invalid move for initial board and 1, 3, 2");
-		assertFalse(reversiGame.placeDisk(5, 4), "expected to be invalid move for initial board and 1, 5, 4");
+		assertFalse(reversiGame.placeDisk(3, 2), "expected to be invalid move for initial board and player 1, 3, 2");
+		assertFalse(reversiGame.placeDisk(5, 4), "expected to be invalid move for initial board and player 1, 5, 4");
 		
-		assertFalse(reversiGame.placeDisk(0, 0), "expected to be invalid move for initial board and 1, 0, 0");
-		assertFalse(reversiGame.placeDisk(3, 3), "expected to be invalid move for initial board and 1, 3, 3");
-		assertFalse(reversiGame.placeDisk(3, 4), "expected to be invalid move for initial board and 1, 3, 4");
-		assertFalse(reversiGame.placeDisk(5, 2), "expected to be invalid move for initial board and 1, 5, 2");
+		assertFalse(reversiGame.placeDisk(0, 0), "expected to be invalid move for initial board and player 1, 0, 0");
+		assertFalse(reversiGame.placeDisk(3, 3), "expected to be invalid move for initial board and player 1, 3, 3");
+		assertFalse(reversiGame.placeDisk(3, 4), "expected to be invalid move for initial board and player 1, 3, 4");
+		assertFalse(reversiGame.placeDisk(5, 2), "expected to be invalid move for initial board and player 1, 5, 2");
 	}
 
 	@Test
@@ -67,6 +65,6 @@ public class ReversiGameTest {
 	@Test
 	void testGetWinnerNoWinnerForInitialBoard() {
 		ReversiGame reversiGame = new ReversiGame();
-		assertEquals(reversiGame.getWinner(), -1, "expected to be 0 for initial board");
+		assertEquals(reversiGame.getWinner(), -1, "expected to be -1 for initial board");
 	}
 }
