@@ -23,5 +23,7 @@ In Part 4, students will implement more advanced bot strategies, such as 1-move 
 ### Bot Tournament
 In the final stage of the project, a bot tournament will be organized. All students will have the opportunity to pit their bots against each other, play Reversi, and compete for the top spot.
 
-Note: The instructions provided to the students for each part contains detailed explanations and requirements for each task, allowing them to gradually build their Reversi game and bot.
+Note 1: The instructions provided to the students for each part contains detailed explanations and requirements for each task, allowing them to gradually build their Reversi game and bot.
+Note 2: we only share ReversiGame, MoveScore, ReversiBot, RenameThisClassMyReversiBot and ReversiMain with the students and there's a need to "clean" ReversiGame and ReversiMain by deleting the code in the methods, leaving only "empty implementations".
+
 
