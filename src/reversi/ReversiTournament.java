@@ -14,6 +14,7 @@ public class ReversiTournament {
 
     private static final int NUM_OF_GAMES = 1000;
     private static boolean VERBOSE = false;
+    private static boolean PAUSE_FOR_INPUT = false;
 
     public static void main(String[] args)
             throws Exception {
@@ -45,8 +46,10 @@ public class ReversiTournament {
 
                 }
                 printLeaderboard(contestants);
-                System.out.println("Press enter to continue");
-                System.in.read();
+                if (PAUSE_FOR_INPUT) {
+                    System.out.println("Press enter to continue");
+                    System.in.read();
+                }
             }
         }
     }
@@ -67,8 +70,11 @@ public class ReversiTournament {
             TournamentContestant contestant2) throws ReflectiveOperationException, IOException {
         System.out.println("Starting match between " + contestant1.botClass.getSimpleName() + " and "
                 + contestant2.botClass.getSimpleName());
-        System.out.println("Are you ready to rubmble? Press enter to start");
-        System.in.read();
+        if (PAUSE_FOR_INPUT) {
+
+            System.out.println("Are you ready to rubmble? Press enter to start");
+            System.in.read();
+        }
 
         SingleRoundScore contestant1MatchScore1 = new SingleRoundScore(contestant1, 0);
         SingleRoundScore contestant1MatchScore2 = new SingleRoundScore(contestant2, 0);
@@ -112,6 +118,7 @@ public class ReversiTournament {
                 contestantsWithScores[1].singleRoundScore++;
             } else {
                 // no points for tie
+                ties++;
             }
 
         }

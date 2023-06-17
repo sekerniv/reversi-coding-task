@@ -37,28 +37,25 @@ public class ReversiMain {
 		int player1Wins = 0;
 		int player2Wins = 0;
 		for (int i = 0; i < 1000; i++) {
-
 			ReversiGame rg = new ReversiGame();
-
-			TwoStepsWithLocationBot bot = new TwoStepsWithLocationBot(rg);
-
+			TwoStepsWithLocationBot bot1 = new TwoStepsWithLocationBot(rg);
+			TwoStepsBot bot2 = new TwoStepsBot(rg);
 			while (!rg.isGameOver()) {
 				rg.printBoard();
-				MoveScore moveScore;
+				MoveScore nextMove;
 				if (rg.getCurPlayer() == ReversiGame.PLAYER_ONE) {
-					System.out.println("getTwoStepsPreferLocationMove bot is playing...");
-					moveScore = bot.getTwoStepsPreferLocationMove();
+					System.out.println("TwoStepsWithLocationBot is playing...");
+					nextMove = bot1.getNextMove();
 				} else {
-					System.out.println("getTwoStepsGreedyMove bot is playing...");
-					moveScore = bot.getTwoStepsGreedyMove();
+					System.out.println("TwoStepsBot is playing...");
+					nextMove = bot2.getNextMove();
 				}
-				if(moveScore == null) {
+				if(nextMove == null) {
 					System.out.println("No possible moves for player " + rg.getCurPlayer() + ". Why wasn't this game terminated?");
-					throw new RuntimeException("No possible moves for player " + rg.getCurPlayer() + " skipping turn");
+					throw new RuntimeException("No possible moves for player " + rg.getCurPlayer() + " we should have skipped the turn");
 				}
-				rg.placeDisk(moveScore.getRow(), moveScore.getColumn());
+				rg.placeDisk(nextMove.getRow(), nextMove.getColumn());
 			}
-
 			rg.printBoard();
 			System.out.println("Game #" + i + " is over!");
 			if (rg.getWinner() == ReversiGame.PLAYER_ONE) {
