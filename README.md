@@ -21,7 +21,7 @@ Part 3 focuses on writing bots and enabling a game between a human and a bot. Fu
 In Part 4, students will implement more advanced bot strategies, such as 1-move lookahead. They will also have the opportunity to work on their own bots and try out different strategies.
 
 ### Bot Tournament
-In the final stage of the project, a bot tournament will be organized. All students will have the opportunity to pit their bots against each other, play Reversi, and compete for the top spot.
+In the final stage of the project, a bot tournament will be organized. All students will have the opportunity to pit their bots against each other, play Reversi, and compete for the top spot. Runnning the main method in ReversiTournament.java, loads all the bots (classes ending in Bot) and have them compete against each other.
 
 ### Note
 - The instructions provided to the students for each part contains detailed explanations and requirements for each task, allowing them to gradually build their Reversi game and bot.
